@@ -3,7 +3,7 @@
 #include "grid.h"
 
 constexpr float WINDOW_RATIO = 0.8;
-constexpr int CELL_SIZE = 32;
+constexpr int CELL_SIZE = 16;
 constexpr int WINDOW_WIDTH = static_cast<int>(1920 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
 constexpr int WINDOW_HEIGHT = static_cast<int>(1080 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
 constexpr int GRID_WIDTH = WINDOW_WIDTH / CELL_SIZE;

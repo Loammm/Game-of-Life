@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <cstdint>
 
 class Grid {
@@ -17,4 +18,5 @@ private:
     std::vector<uint8_t> cells_; // using uint8_t for speed instead of bool
     std::vector<uint8_t> nextCells_;
     int countNeighbours(int x, int y) const;
+    std::unordered_set<int> liveCells_; // optimisation to only update live cells and their neighbours
 };
