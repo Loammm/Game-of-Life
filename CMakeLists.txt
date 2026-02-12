@@ -14,7 +14,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 
 # Our executable — just one source file for now.
-add_executable(game_of_life WIN32 src/main.cpp)
+add_executable(game_of_life WIN32 src/main.cpp src/grid.cpp)
 
 # Link against SDL3.
 target_link_libraries(game_of_life PRIVATE SDL3::SDL3)
