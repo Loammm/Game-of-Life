@@ -1,9 +1,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-constexpr int WINDOW_WIDTH = 1920;
-constexpr int WINDOW_HEIGHT = 1080;
 constexpr float WINDOW_RATIO = 0.8;
+constexpr int CELL_SIZE = 32;
+constexpr int WINDOW_WIDTH = static_cast<int>(1920 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
+constexpr int WINDOW_HEIGHT = static_cast<int>(1080 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
+constexpr int GRID_WIDTH = WINDOW_WIDTH / CELL_SIZE;
+constexpr int GRID_HEIGHT = WINDOW_HEIGHT / CELL_SIZE;
+
 
 int main(int argc, char* argv[]) {
     // --- 1. Initialise SDL VIDEO (graphics) ---
@@ -13,7 +17,8 @@ int main(int argc, char* argv[]) {
     }
 
     // --- 2. Create a window ---
-    SDL_Window* window = SDL_CreateWindow("Game of Life", WINDOW_WIDTH*WINDOW_RATIO, WINDOW_HEIGHT*WINDOW_RATIO, 0);
+    // +1 pixel for the last line of the grid
+    SDL_Window* window = SDL_CreateWindow("Game of Life", WINDOW_WIDTH+1, WINDOW_HEIGHT+1, 0);
 
     if (window == nullptr) {
         SDL_Log("Window could not be created! Error: %s", SDL_GetError());
@@ -48,11 +53,19 @@ int main(int argc, char* argv[]) {
         }
 
         // --- 4b. Render ---
-        // Step 1: Set the draw colour (R, G, B, A).
+        // Set the draw colour (R, G, B, A).
         SDL_SetRenderDrawColor(renderer, 15, 15, 20, 255);
-        // Step 2: Clear the whole screen with that colour.
+        // Clear the whole screen with that colour.
         SDL_RenderClear(renderer);
-        // Step 3: Present — flip the back buffer to the screen.
+        // Render the grid.
+        SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255);
+        for (int x = 0; x <= GRID_WIDTH; x++) {
+            SDL_RenderLine(renderer, x * CELL_SIZE, 0, x * CELL_SIZE, WINDOW_HEIGHT);
+        }
+        for (int y = 0; y <= GRID_HEIGHT; y++) {
+            SDL_RenderLine(renderer, 0, y * CELL_SIZE, WINDOW_WIDTH, y * CELL_SIZE);
+        }
+        // Present — flip the back buffer to the screen.
         SDL_RenderPresent(renderer);
     }
 
