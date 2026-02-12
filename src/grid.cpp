@@ -1,5 +1,6 @@
 #include "grid.h"
 #include <algorithm>
+#include <random>
 
 Grid::Grid(int width, int height) : width_(width), height_(height), cells_(width * height, 0), nextCells_(width * height, 0), liveCells_(width * height) {}
 
@@ -29,7 +30,7 @@ int Grid::countNeighbours(int x, int y) const {
     return count;
 }
 
-void Grid::update() {
+bool Grid::update() {
     std::unordered_set<int> activeCells;
     // reset nextCells_ to prevent ghost cells
     std::fill(nextCells_.begin(), nextCells_.end(), 0);
@@ -67,6 +68,28 @@ void Grid::update() {
     for(int index: activeCells){
         if(cells_[index]){
             liveCells_.insert(index);
+        }
+    }
+    if(liveCells_.empty() || cells_==nextCells_) return false; // used to pause the game when the grid is stable
+    return true;
+}
+
+void Grid::reset() {
+    cells_.assign(width_ * height_, 0);
+    liveCells_.clear();
+}
+
+void Grid::randomise(float density) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::bernoulli_distribution d(density); // true/false with probability density
+    for(int i = 0; i < width_ * height_; i++) {
+        cells_[i] = d(gen);
+    }
+    liveCells_.clear();
+    for(int i = 0; i < width_ * height_; i++) {
+        if(cells_[i]) {
+            liveCells_.insert(i);
         }
     }
 }

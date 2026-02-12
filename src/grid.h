@@ -10,7 +10,9 @@ public:
 
     void toggleCell(int x, int y);
     bool getCell(int x, int y) const;
-    void update();
+    bool update();
+    void reset();
+    void randomise(float density);
 
 private:
     int width_;

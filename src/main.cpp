@@ -3,7 +3,7 @@
 #include "grid.h"
 
 constexpr float WINDOW_RATIO = 0.8;
-constexpr int CELL_SIZE = 16;
+constexpr int CELL_SIZE = 32;
 constexpr int WINDOW_WIDTH = static_cast<int>(1920 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
 constexpr int WINDOW_HEIGHT = static_cast<int>(1080 * WINDOW_RATIO / CELL_SIZE) * CELL_SIZE;
 constexpr int GRID_WIDTH = WINDOW_WIDTH / CELL_SIZE;
@@ -11,6 +11,9 @@ constexpr int GRID_HEIGHT = WINDOW_HEIGHT / CELL_SIZE;
 
 bool drag = false;
 bool dragValue = false; // true for alive, false for dead
+bool pause = true;
+// Timer for the update function
+int stepInterval = 100;
 
 int main(int argc, char* argv[]) {
     // --- Initialise SDL VIDEO (graphics) ---
@@ -47,6 +50,8 @@ int main(int argc, char* argv[]) {
     //   2. Update state   (nothing to update yet)
     //   3. Render          (paint the screen)
     bool running = true;
+    //Initiate ticks
+    Uint64 lastStepTime = SDL_GetTicks();
 
     while (running) {
         // --- Handle events ---
@@ -83,11 +88,49 @@ int main(int argc, char* argv[]) {
             if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
                 drag = false;
             }
-            // placeholder manual update
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_A) {
+            // Press N to update the grid to the next generation
+            if (event.type == SDL_EVENT_KEY_DOWN && pause) {
+                if (event.key.key == SDLK_N) {
                     grid.update();
                 }
+            }
+            // Press Space to play/pause
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key == SDLK_SPACE) {
+                    pause = !pause;
+                }
+            }
+            // Press R to reset the grid
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key == SDLK_R) {
+                    pause = true;
+                    grid.reset();
+                }
+            }
+            // Press 1-9 to create a random grid with density 10%-90%
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key >= SDLK_1 && event.key.key <= SDLK_9) {
+                    pause = true;
+                    float density = static_cast<float>(event.key.key - SDLK_1 + 1) * 0.1;
+                    grid.randomise(density);
+                }
+            }
+            // Press Up/Down to speed/slow the animation
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key == SDLK_UP) {
+                    if( stepInterval > 4) stepInterval /= 2;
+                }
+                if (event.key.key == SDLK_DOWN) {
+                    if( stepInterval < 1000) stepInterval *= 2;
+                }
+            }
+        }
+        // Play timer logic
+        Uint64 now = SDL_GetTicks();
+        if (now - lastStepTime > stepInterval) {
+            if (!pause) {
+                if(grid.update()) lastStepTime = now;
+                else pause = true;
             }
         }
 
