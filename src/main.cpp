@@ -88,40 +88,20 @@ int main(int argc, char* argv[]) {
             if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
                 drag = false;
             }
-            // Press N to update the grid to the next generation
-            if (event.type == SDL_EVENT_KEY_DOWN && pause) {
-                if (event.key.key == SDLK_N) {
-                    grid.update();
-                }
-            }
-            // Press Space to play/pause
+            // --- Handle keyboard event ---
             if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_SPACE) {
-                    pause = !pause;
-                }
-            }
-            // Press R to reset the grid
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_R) {
-                    pause = true;
-                    grid.reset();
-                }
-            }
-            // Press 1-9 to create a random grid with density 10%-90%
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key >= SDLK_1 && event.key.key <= SDLK_9) {
-                    pause = true;
-                    float density = static_cast<float>(event.key.key - SDLK_1 + 1) * 0.1;
-                    grid.randomise(density);
-                }
-            }
-            // Press Up/Down to speed/slow the animation
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_UP) {
-                    if( stepInterval > 4) stepInterval /= 2;
-                }
-                if (event.key.key == SDLK_DOWN) {
-                    if( stepInterval < 1000) stepInterval *= 2;
+                switch (event.key.key) {
+                    case SDLK_SPACE: pause = !pause; break;
+                    case SDLK_R:     pause = true; grid.reset(); break;
+                    case SDLK_N:     if (pause) grid.update(); break;
+                    case SDLK_UP:    if (stepInterval > 4) stepInterval /= 2; break;
+                    case SDLK_DOWN:  if (stepInterval < 1000) stepInterval *= 2; break;
+                    default:
+                        if (event.key.key >= SDLK_1 && event.key.key <= SDLK_9) {
+                            pause = true;
+                            grid.randomise((event.key.key - SDLK_1 + 1) * 0.1f);
+                        }
+                        break;
                 }
             }
         }
