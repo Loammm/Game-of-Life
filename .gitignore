@@ -1,0 +1,21 @@
+# Build
+build/
+dist/
+
+# Vendored dependencies (cloned locally, not committed)
+vendored/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled
+*.o
+*.obj
+*.exe
