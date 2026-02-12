@@ -9,6 +9,8 @@ constexpr int WINDOW_HEIGHT = static_cast<int>(1080 * WINDOW_RATIO / CELL_SIZE) 
 constexpr int GRID_WIDTH = WINDOW_WIDTH / CELL_SIZE;
 constexpr int GRID_HEIGHT = WINDOW_HEIGHT / CELL_SIZE;
 
+bool drag = false;
+bool dragValue = false; // true for alive, false for dead
 
 int main(int argc, char* argv[]) {
     // --- Initialise SDL VIDEO (graphics) ---
@@ -55,13 +57,31 @@ int main(int argc, char* argv[]) {
             }
             // --- Handle mouse click event ---
             if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                drag = true;
                 float mouse_x, mouse_y;
                 SDL_GetMouseState(&mouse_x, &mouse_y);
                 int grid_x = static_cast<int>(mouse_x / CELL_SIZE);
                 int grid_y = static_cast<int>(mouse_y / CELL_SIZE);
                 if (grid_x >= 0 && grid_x < GRID_WIDTH && grid_y >= 0 && grid_y < GRID_HEIGHT) {
                     grid.toggleCell(grid_x, grid_y);
+                    dragValue = grid.getCell(grid_x, grid_y);
                 }
+            }
+            // --- Handle mouse drag event ---
+            if (drag && event.type == SDL_EVENT_MOUSE_MOTION){
+                float mouse_x, mouse_y;
+                SDL_GetMouseState(&mouse_x, &mouse_y);
+                int grid_x = static_cast<int>(mouse_x / CELL_SIZE);
+                int grid_y = static_cast<int>(mouse_y / CELL_SIZE);
+                if (grid_x >= 0 && grid_x < GRID_WIDTH && grid_y >= 0 && grid_y < GRID_HEIGHT) {
+                    if (grid.getCell(grid_x, grid_y) != dragValue) {
+                        grid.toggleCell(grid_x, grid_y);
+                    }
+                }
+            }
+            // --- Handle mouse release event ---
+            if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
+                drag = false;
             }
         }
 
