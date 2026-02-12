@@ -83,6 +83,12 @@ int main(int argc, char* argv[]) {
             if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
                 drag = false;
             }
+            // placeholder manual update
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key == SDLK_A) {
+                    grid.update();
+                }
+            }
         }
 
         // --- Render ---
